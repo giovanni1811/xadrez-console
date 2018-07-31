@@ -8,8 +8,11 @@ namespace xadrez_console
         static void Main(string[] args)
         {
             Posicao p;
+            Tabuleiro tabuleiro;
 
             p = new Posicao(3, 4);
+
+            tabuleiro = new Tabuleiro(8, 8);
 
             Console.WriteLine("Posição: " + p);
 
