@@ -12,6 +12,7 @@ namespace xadrez
         private HashSet<Peca> pecas;
         private HashSet<Peca> pecasCapturadas;
         public bool xeque { get; private set; }
+        public Cor vencedora;
 
         public PartidaDeXadrez()
         {
@@ -71,8 +72,50 @@ namespace xadrez
                 xeque = false;
             }
 
-            turno++;
-            mudaJogador();
+            if (testeXequeMate(adversaria(jogadorAtual)))
+            {
+                terminada = true;
+                vencedora = jogadorAtual;
+            }
+            else
+            {
+                turno++;
+                mudaJogador();
+            }
+            
+        }
+
+        public bool testeXequeMate(Cor cor)
+        {
+            if (!estaEmXeque(cor))
+            {
+                return false;
+            }
+
+            foreach (Peca x in pecasEmJogo(cor))
+            {
+                bool[,] mat = x.movimentosPossiveis();
+                for (int i = 0; i < tab.linhas; i++)
+                {
+                    for (int g = 0; g < tab.colunas; g++)
+                    {
+                        Posicao destino = new Posicao(i, g);
+                        Posicao origem = x.pos;
+                        if (mat[i, g])
+                        {
+                            Peca pecaCapturada = executaMovimento(origem, destino);
+                            bool testeXeque = estaEmXeque(cor);
+                            desfazMovimento(origem, destino, pecaCapturada);
+
+                            if (!testeXeque)
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+            return true;
         }
 
         public void validarPosicaoOrigem(Posicao origem)
@@ -187,19 +230,13 @@ namespace xadrez
 
         private void colocaPeca()
         {
-            colocaNovaPeca('c', 2, new Torre(Cor.Branca, tab));
-            colocaNovaPeca('d', 2, new Torre(Cor.Branca, tab));
-            colocaNovaPeca('e', 2, new Torre(Cor.Branca, tab));
-            colocaNovaPeca('c', 1, new Torre(Cor.Branca, tab));
-            colocaNovaPeca('e', 1, new Torre(Cor.Branca, tab));
-            colocaNovaPeca('d', 1, new Rei(Cor.Branca, tab));
+            colocaNovaPeca('c', 1, new Torre(Cor.Preta, tab));
+            colocaNovaPeca('d', 1, new Rei(Cor.Preta, tab));
+            colocaNovaPeca('h', 7, new Torre(Cor.Preta, tab));
 
-            colocaNovaPeca('c', 7, new Torre(Cor.Preta, tab));
-            colocaNovaPeca('d', 7, new Torre(Cor.Preta, tab));
-            colocaNovaPeca('e', 7, new Torre(Cor.Preta, tab));
-            colocaNovaPeca('c', 8, new Torre(Cor.Preta, tab));
-            colocaNovaPeca('e', 8, new Torre(Cor.Preta, tab));
-            colocaNovaPeca('d', 8, new Rei(Cor.Preta, tab));
+            colocaNovaPeca('a', 8, new Rei(Cor.Branca, tab));
+            colocaNovaPeca('b', 8, new Torre(Cor.Branca, tab));
+
         }
 
     }
